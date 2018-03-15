@@ -11,16 +11,19 @@ from nima.inference.utils import format_output
 
 class InferenceModel:
     @classmethod
-    def create_model(cls):
+    def create_model(cls, use_gpu=False):
         path_to_model = download_file(config('MODEL_URL'), config('MODEL_PATH'))
-        return cls(path_to_model)
+        return cls(path_to_model, use_gpu)
 
-    def __init__(self, path_to_model):
+    def __init__(self, path_to_model, use_gpu=False):
+        self.use_gpu = use_gpu
         self.transform = Transform().val_transform
         self.model = NIMA(pretrained_base_model=False)
         state_dict = torch.load(path_to_model, map_location=lambda storage, loc: storage)
         self.model.load_state_dict(state_dict)
         self.model.eval()
+        if use_gpu:
+            self.model.cuda()
 
     def predict_from_file(self, image_path):
         image = default_loader(image_path)
@@ -34,7 +37,11 @@ class InferenceModel:
         image = self.transform(image)
         image = image.unsqueeze_(0)
         image = torch.autograd.Variable(image, volatile=True)
-        prob = self.model(image).data.numpy()[0]
+        if self.use_gpu:
+            image = image.cuda()
+            prob = self.model(image).data.cpu().numpy()[0]
+        else:
+            prob = self.model(image).data.numpy()[0]
 
         mean_score = get_mean_score(prob)
         std_score = get_std_score(prob)
