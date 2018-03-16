@@ -8,15 +8,16 @@ from nima.common import Transform, get_mean_score, get_std_score
 from nima.common import download_file
 from nima.inference.utils import format_output
 
+use_gpu = torch.cuda.is_available()
+
 
 class InferenceModel:
     @classmethod
-    def create_model(cls, use_gpu=False):
+    def create_model(cls):
         path_to_model = download_file(config('MODEL_URL'), config('MODEL_PATH'))
-        return cls(path_to_model, use_gpu)
+        return cls(path_to_model)
 
-    def __init__(self, path_to_model, use_gpu=False):
-        self.use_gpu = use_gpu
+    def __init__(self, path_to_model):
         self.transform = Transform().val_transform
         self.model = NIMA(pretrained_base_model=False)
         state_dict = torch.load(path_to_model, map_location=lambda storage, loc: storage)
@@ -37,11 +38,9 @@ class InferenceModel:
         image = self.transform(image)
         image = image.unsqueeze_(0)
         image = torch.autograd.Variable(image, volatile=True)
-        if self.use_gpu:
+        if use_gpu:
             image = image.cuda()
-            prob = self.model(image).data.cpu().numpy()[0]
-        else:
-            prob = self.model(image).data.numpy()[0]
+        prob = self.model(image).data.cpu().numpy()[0]
 
         mean_score = get_mean_score(prob)
         std_score = get_std_score(prob)
