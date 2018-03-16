@@ -37,9 +37,9 @@ class InferenceModel:
     def predict(self, image):
         image = self.transform(image)
         image = image.unsqueeze_(0)
-        image = torch.autograd.Variable(image, volatile=True)
         if use_gpu:
             image = image.cuda()
+        image = torch.autograd.Variable(image, volatile=True)
         prob = self.model(image).data.cpu().numpy()[0]
 
         mean_score = get_mean_score(prob)
