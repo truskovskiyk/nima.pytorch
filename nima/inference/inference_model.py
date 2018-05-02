@@ -8,7 +8,8 @@ from nima.common import Transform, get_mean_score, get_std_score
 from nima.common import download_file
 from nima.inference.utils import format_output
 
-use_gpu = torch.cuda.is_available()
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda" if use_cuda else "cpu")
 
 
 class InferenceModel:
@@ -22,9 +23,8 @@ class InferenceModel:
         self.model = NIMA(pretrained_base_model=False)
         state_dict = torch.load(path_to_model, map_location=lambda storage, loc: storage)
         self.model.load_state_dict(state_dict)
+        self.model = self.model.to(device)
         self.model.eval()
-        if use_gpu:
-            self.model.cuda()
 
     def predict_from_file(self, image_path):
         image = default_loader(image_path)
@@ -37,8 +37,7 @@ class InferenceModel:
     def predict(self, image):
         image = self.transform(image)
         image = image.unsqueeze_(0)
-        if use_gpu:
-            image = image.cuda()
+        image = image.to(device)
         image = torch.autograd.Variable(image, volatile=True)
         prob = self.model(image).data.cpu().numpy()[0]
 

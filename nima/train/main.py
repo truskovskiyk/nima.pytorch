@@ -14,6 +14,7 @@ from nima.common import Transform
 from nima.train.utils import TrainParams, ValidateParams, AverageMeter
 
 use_gpu = torch.cuda.is_available()
+device = torch.device("cuda" if use_gpu else "cpu")
 
 
 def train(model, loader, optimizer, criterion):
@@ -22,11 +23,8 @@ def train(model, loader, optimizer, criterion):
     step = 0
 
     for x, y in tqdm(loader):
-        if use_gpu:
-            x = x.cuda()
-            y = y.cuda()
-        x = torch.autograd.Variable(x)
-        y = torch.autograd.Variable(y)
+        x = x.to(device)
+        y = y.to(device)
 
         y_pred = model(x)
 
@@ -47,11 +45,8 @@ def validate(model, loader, criterion):
     validate_losses = AverageMeter()
     step = 0
     for x, y in tqdm(loader):
-        if use_gpu:
-            x = x.cuda()
-            y = y.cuda()
-        x = torch.autograd.Variable(x, volatile=True)
-        y = torch.autograd.Variable(y, volatile=True)
+        x = x.to(device)
+        y = y.to(device)
 
         y_pred = model(x)
 
@@ -95,10 +90,8 @@ def start_train(params: TrainParams):
     model = NIMA()
     optimizer = torch.optim.Adam(model.parameters(), lr=params.init_lr)
     criterion = EDMLoss()
-    if use_gpu:
-        model = model.cuda()
-        model = torch.nn.DataParallel(model)
-        criterion.cuda()
+    model = model.to(device)
+    criterion.to(device)
 
     writer = SummaryWriter(log_dir=os.path.join(params.experiment_dir_name, 'logs'))
     os.makedirs(params.experiment_dir_name, exist_ok=True)
@@ -123,10 +116,8 @@ def start_check_model(params: ValidateParams):
     model.load_state_dict(torch.load(params.path_to_model_weight))
     criterion = EDMLoss()
 
-    if use_gpu:
-        model = model.cuda()
-        model = torch.nn.DataParallel(model)
-        criterion.cuda()
+    model = model.to(device)
+    criterion.to(device)
 
     val_loss = validate(model=model, loader=val_loader, criterion=criterion)
     test_loss = validate(model=model, loader=test_loader, criterion=criterion)
