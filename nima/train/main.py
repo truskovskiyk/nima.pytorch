@@ -38,7 +38,7 @@ def train(model, loader, optimizer, criterion, writer=None, global_step=None, na
 def validate(model, loader, criterion, writer=None, global_step=None, name=None):
     model.eval()
     validate_losses = AverageMeter()
-    for idx, x, y in tqdm(loader):
+    for idx, (x, y) in enumerate(tqdm(loader)):
         x = x.to(device)
         y = y.to(device)
         y_pred = model(x)
