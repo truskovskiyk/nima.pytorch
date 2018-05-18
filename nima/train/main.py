@@ -17,43 +17,36 @@ use_gpu = torch.cuda.is_available()
 device = torch.device("cuda" if use_gpu else "cpu")
 
 
-def train(model, loader, optimizer, criterion):
+def train(model, loader, optimizer, criterion, writer=None, global_step=None, name=None):
     model.train()
     train_losses = AverageMeter()
-    step = 0
-
-    for x, y in tqdm(loader):
+    for idx, (x, y) in enumerate(tqdm(loader)):
         x = x.to(device)
         y = y.to(device)
-
         y_pred = model(x)
-
         loss = criterion(p_target=y, p_estimate=y_pred)
-
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        train_losses.update(loss.item(), x.size(0))
 
-        train_losses.update(loss.data[0], x.size(0))
-
-        step += 1
+        if writer is not None:
+            writer.add_scalar(f"{name}/train_loss.avg", train_losses.avg, global_step=global_step + idx)
     return train_losses.avg
 
 
-def validate(model, loader, criterion):
+def validate(model, loader, criterion, writer=None, global_step=None, name=None):
     model.eval()
     validate_losses = AverageMeter()
-    step = 0
-    for x, y in tqdm(loader):
+    for idx, x, y in tqdm(loader):
         x = x.to(device)
         y = y.to(device)
-
         y_pred = model(x)
-
         loss = criterion(p_target=y, p_estimate=y_pred)
-        validate_losses.update(loss.data[0], x.size(0))
+        validate_losses.update(loss.item(), x.size(0))
 
-        step += 1
+        if writer is not None:
+            writer.add_scalar(f"{name}/val_loss.avg", validate_losses.avg, global_step=global_step + idx)
     return validate_losses.avg
 
 
@@ -97,14 +90,18 @@ def start_train(params: TrainParams):
     os.makedirs(params.experiment_dir_name, exist_ok=True)
     params.save_params(os.path.join(params.experiment_dir_name, 'params.json'))
 
-    for e in range(1, params.num_epoch + 1):
-        train_loss = train(model=model, loader=train_loader, optimizer=optimizer, criterion=criterion)
-        val_loss = validate(model=model, loader=val_loader, criterion=criterion)
-        print(f"train_loss {train_loss} val_loss = {val_loss}")
+    for e in range(params.num_epoch):
+        train_loss = train(model=model, loader=train_loader, optimizer=optimizer, criterion=criterion,
+                           writer=writer, global_step=len(train_loader.dataset) * e,
+                           name=f"{params.experiment_dir_name}_by_batch")
+        val_loss = validate(model=model, loader=val_loader, criterion=criterion,
+                            writer=writer, global_step=len(train_loader.dataset) * e,
+                            name=f"{params.experiment_dir_name}_by_batch")
+
         model_name = f"emd_loss_epoch_{e}_train_{train_loss}_{val_loss}.pth"
         torch.save(model.module.state_dict(), os.path.join(params.experiment_dir_name, model_name))
-        writer.add_scalar(f"{params.experiment_dir_name}/train_loss", train_loss, global_step=e)
-        writer.add_scalar(f"{params.experiment_dir_name}/val_loss", val_loss, global_step=e)
+        writer.add_scalar(f"{params.experiment_dir_name}_by_epoch/train_loss", train_loss, global_step=e)
+        writer.add_scalar(f"{params.experiment_dir_name}_by_epoch/val_loss", val_loss, global_step=e)
 
     writer.export_scalars_to_json(os.path.join(params.experiment_dir_name, 'all_scalars.json'))
     writer.close()
