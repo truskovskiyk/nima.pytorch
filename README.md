@@ -44,26 +44,34 @@ Please use our [swagger](https://neural-image-assessment.herokuapp.com/apidocs) 
 
 
 ## Usage
-
-Clean and prepare dataset
 ```bash
 export PYTHONPATH=.
-python nima/cli.py prepare_dataset --path_to_ava_txt ./DATA/ava/AVA.txt \
-                                    --path_to_save_csv ./DATA/ava \
-                                    --path_to_images ./DATA/images/
+export PATH_TO_AVA_TXT=/storage/DATA/ava/AVA.txt
+export PATH_TO_IMAGES=/storage/DATA/images/
+export PATH_TO_CSV=/storage/DATA/ava/
+export BATCH_SIZE=16
+export NUM_WORKERS=2
+export NUM_EPOCH=50
+export INIT_LR=0.0001
+export EXPERIMENT_DIR_NAME=/storage/experiment_n0001
+```
+Clean and prepare dataset
+```bash
+python nima/cli.py prepare_dataset --path_to_ava_txt $PATH_TO_AVA_TXT \
+                                    --path_to_save_csv $PATH_TO_CSV \
+                                    --path_to_images $PATH_TO_IMAGES
 
 ```
 
 Train model
 ```bash
-export PYTHONPATH=.
-python nima/cli.py train_model --path_to_save_csv ./DATA/ava/ \
-                                --path_to_images ./DATA/images \
-                                --batch_size 16 \
-                                --num_workers 2 \
-                                --num_epoch 15 \
-                                --init_lr 0.009 \
-                                --experiment_dir_name firts0.009
+python nima/cli.py train_model --path_to_save_csv $PATH_TO_CSV \
+                                --path_to_images $PATH_TO_IMAGES \
+                                --batch_size $BATCH_SIZE \
+                                --num_workers $NUM_WORKERS \
+                                --num_epoch $NUM_EPOCH \
+                                --init_lr $INIT_LR \
+                                --experiment_dir_name $EXPERIMENT_DIR_NAME
 
 
 ```
@@ -74,18 +82,15 @@ tensorboard --logdir .
 ```
 Validate model on val and test datasets
 ```bash
-export PYTHONPATH=.
 python nima/cli.py validate_model --path_to_model_weight ./pretrain-model.pth \
-                                    --path_to_save_csv ./DATA/ava \
-                                    --path_to_images ./DATA/images \
-                                    --batch_size 16 \
-                                    --num_workers 4
+                                    --path_to_save_csv $PATH_TO_CSV \
+                                    --path_to_images $PATH_TO_IMAGES \
+                                    --batch_size $BATCH_SIZE \
+                                    --num_workers $NUM_EPOCH
 ```
 Get scores for one image
 ```bash
-export PYTHONPATH=.
-python nima/cli.py get_image_score --path_to_model_weight ./pretrain-model.pth \
-                                       --path_to_image test_image.jpg
+python nima/cli.py get_image_score --path_to_model_weight ./pretrain-model.pth --path_to_image test_image.jpg
 ```
    
 ## Contributing

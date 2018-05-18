@@ -103,3 +103,4 @@ ENV/
 DATA/
 *.pth
 test.jpg
+custom_setup.md

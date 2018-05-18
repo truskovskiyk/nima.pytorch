@@ -10,14 +10,21 @@ IMAGE_NET_STD = [0.229, 0.224, 0.225]
 
 class Transform:
     def __init__(self):
+        normalize = transforms.Normalize(
+            mean=IMAGE_NET_MEAN,
+            std=IMAGE_NET_STD)
+
         self._train_transform = transforms.Compose([
-            transforms.Resize((224, 224)),
+            transforms.Resize((256, 256)),
             transforms.RandomHorizontalFlip(),
-            transforms.ToTensor()])
+            transforms.RandomCrop((224, 224)),
+            transforms.ToTensor(),
+            normalize])
 
         self._val_transform = transforms.Compose([
             transforms.Resize((224, 224)),
-            transforms.ToTensor()])
+            transforms.ToTensor(),
+            normalize])
 
     @property
     def train_transform(self):
