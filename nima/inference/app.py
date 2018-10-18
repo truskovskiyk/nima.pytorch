@@ -1,6 +1,5 @@
 from flask import Flask, redirect, url_for, request, jsonify
 from PIL import Image
-
 from flasgger import Swagger
 
 from nima.inference.inference_model import InferenceModel
@@ -8,6 +7,14 @@ from nima.inference.inference_model import InferenceModel
 app = Flask(__name__)
 Swagger(app=app)
 app.model = InferenceModel.create_model()
+
+
+def format_output(mean_score, std_score, prob):
+    return {
+        'mean_score': float(mean_score),
+        'std_score': float(std_score),
+        'scores': [float(x) for x in prob]
+    }
 
 
 @app.route('/')

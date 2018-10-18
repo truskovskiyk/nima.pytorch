@@ -1,10 +1,18 @@
 import torch.nn as nn
+import torchvision as tv
 
-from nima.mobile_net_v2 import mobile_net_v2
+MODELS = {
+    'resnet18': tv.models.resnet18
+}
+
+
+def create_model(model_name: str):
+    base_model = nn.Sequential(*list(base_model.children())[:-1])
+
 
 
 class NIMA(nn.Module):
-    def __init__(self, pretrained_base_model=True):
+    def __init__(self, base_model: nn.Module):
         super(NIMA, self).__init__()
         base_model = mobile_net_v2(pretrained=pretrained_base_model)
         base_model = nn.Sequential(*list(base_model.children())[:-1])

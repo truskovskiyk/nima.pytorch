@@ -1,0 +1,46 @@
+defaults: &defaults
+  machine:
+    image: circleci/classic:201711-01
+    docker_layer_caching: true
+  working_directory: ~/app
+
+
+version: 2
+
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo bash -c "yes | add-apt-repository ppa:jonathonf/python-3.6 && apt-get update && apt-get install -y python3.6 python3.6-dev python3.6-tk"
+      - run:
+          name: Run unit tests
+          command: |
+            make run_tests
+
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Building and pushing docker images
+          command: |
+            make build_and_push_docker
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - test:
+          context: org-global
+      - deploy:
+          context: org-global
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
