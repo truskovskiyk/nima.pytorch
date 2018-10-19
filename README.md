@@ -49,6 +49,7 @@ export PYTHONPATH=.
 export PATH_TO_AVA_TXT=/storage/DATA/ava/AVA.txt
 export PATH_TO_IMAGES=/storage/DATA/images/
 export PATH_TO_CSV=/storage/DATA/ava/
+
 export BATCH_SIZE=16
 export NUM_WORKERS=2
 export NUM_EPOCH=50
@@ -57,9 +58,7 @@ export EXPERIMENT_DIR_NAME=/storage/experiment_n0001
 ```
 Clean and prepare dataset
 ```bash
-python nima/cli.py prepare_dataset --path_to_ava_txt $PATH_TO_AVA_TXT \
-                                    --path_to_save_csv $PATH_TO_CSV \
-                                    --path_to_images $PATH_TO_IMAGES
+python nima/cli.py prepare_dataset --path_to_ava_txt $PATH_TO_AVA_TXT --path_to_save_csv $PATH_TO_CSV --path_to_images $PATH_TO_IMAGES
 
 ```
 
