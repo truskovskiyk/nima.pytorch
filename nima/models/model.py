@@ -3,7 +3,7 @@ import torchvision as tv
 
 MODELS = {
     'resnet18': (tv.models.resnet18, 512),
-    'resnet32': (tv.models.resnet34, 512),
+    'resnet34': (tv.models.resnet34, 512),
     'resnet50': (tv.models.resnet50, 2048),
     'resnet101': (tv.models.resnet101, 2048),
     'resnet152': (tv.models.resnet152, 2048),

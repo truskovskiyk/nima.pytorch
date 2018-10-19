@@ -42,7 +42,7 @@ def prepare_dataset(path_to_ava_txt: Path, path_to_save_csv: Path, path_to_image
 @click.option('--num_workers', help='number of reading workers', default=32, type=int)
 @click.option('--num_epoch', help='number of epoch', default=32, type=int)
 @click.option('--init_lr', help='initial learning rate', default=0.0001, type=float)
-def train_model(path_to_save_csv: Path, path_to_images: Path, experiment_dir: Path, model: str, batch_size: int,
+def train_model(path_to_save_csv: Path, path_to_images: Path, experiment_dir: Path, base_model: str, batch_size: int,
                 num_workers: int, num_epoch: int, init_lr: float):
     click.echo('train and validate model')
 
@@ -55,7 +55,6 @@ def train_model(path_to_save_csv: Path, path_to_images: Path, experiment_dir: Pa
                       num_epoch=num_epoch,
                       init_lr=init_lr)
     trainer.train_model()
-
 
 
 #
