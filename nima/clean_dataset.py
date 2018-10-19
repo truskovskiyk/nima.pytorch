@@ -54,6 +54,8 @@ def read_ava_txt(path_to_ava: Path) -> pd.DataFrame:
     score_names = [f'score{i}' for i in range(score_first_column, score_last_column)]
     tag_names = [f'tag{i}' for i in range(tag_first_column, tag_last_column)]
     df.columns = ['image_id'] + score_names + tag_names
+    # leave only score columns
+    df = df[['image_id'] + score_names]
     return df
 
 
