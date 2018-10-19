@@ -6,7 +6,10 @@ MODELS = {
 }
 
 
-def create_model(model_name: str):
+def create_model(base_model_name: str):
+    base_model = MODELS[base_model_name](pretrained=True)
+
+    base_model = base_model(pretrained=True)
     base_model = nn.Sequential(*list(base_model.children())[:-1])
 
 
