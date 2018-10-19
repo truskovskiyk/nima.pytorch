@@ -2,30 +2,30 @@ import torch.nn as nn
 import torchvision as tv
 
 MODELS = {
-    'resnet18': tv.models.resnet18
+    'resnet18': (tv.models.resnet18, 512),
+    'resnet32': (tv.models.resnet34, 512),
+    'resnet50': (tv.models.resnet50, 2048),
+    'resnet101': (tv.models.resnet101, 2048),
+    'resnet152': (tv.models.resnet152, 2048),
 }
 
 
-def create_model(base_model_name: str):
-    base_model = MODELS[base_model_name](pretrained=True)
-
-    base_model = base_model(pretrained=True)
+def create_model(base_model_name: str = None) -> nn.Module:
+    create_function, input_features = MODELS[base_model_name]
+    base_model = create_function(pretrained=True)
     base_model = nn.Sequential(*list(base_model.children())[:-1])
-
+    return NIMA(base_model=base_model, input_features=input_features)
 
 
 class NIMA(nn.Module):
-    def __init__(self, base_model: nn.Module):
+    def __init__(self, base_model: nn.Module, input_features: int):
         super(NIMA, self).__init__()
-        base_model = mobile_net_v2(pretrained=pretrained_base_model)
-        base_model = nn.Sequential(*list(base_model.children())[:-1])
-
         self.base_model = base_model
 
         self.head = nn.Sequential(
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.75),
-            nn.Linear(1280, 10),
+            nn.Linear(input_features, 10),
             nn.Softmax(dim=1)
         )
 

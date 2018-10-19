@@ -37,7 +37,7 @@ def prepare_dataset(path_to_ava_txt: Path, path_to_save_csv: Path, path_to_image
 @click.option('--path_to_save_csv', help='where save train.csv|val.csv|test.csv', required=True, type=Path)
 @click.option('--path_to_images', help='images directory', required=True, type=Path)
 @click.option('--experiment_dir', help='directory name to save all logs and weight', required=True, type=Path)
-@click.option('--model', help='res net model type', default='resnet18', type=str)
+@click.option('--base_model', help='res net model type', default='resnet18', type=str)
 @click.option('--batch_size', help='batch size', default=128, type=int)
 @click.option('--num_workers', help='number of reading workers', default=32, type=int)
 @click.option('--num_epoch', help='number of epoch', default=32, type=int)
@@ -49,7 +49,7 @@ def train_model(path_to_save_csv: Path, path_to_images: Path, experiment_dir: Pa
     trainer = Trainer(path_to_save_csv=path_to_save_csv,
                       path_to_images=path_to_images,
                       experiment_dir=experiment_dir,
-                      model=model,
+                      base_model=base_model,
                       batch_size=batch_size,
                       num_workers=num_workers,
                       num_epoch=num_epoch,
@@ -83,7 +83,7 @@ def train_model(path_to_save_csv: Path, path_to_images: Path, experiment_dir: Pa
 
 
 cli.add_command(prepare_dataset)
-# cli.add_command(train_model)
+cli.add_command(train_model)
 # cli.add_command(validate_model)
 # cli.add_command(get_image_score)
 

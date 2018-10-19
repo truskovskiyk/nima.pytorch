@@ -77,7 +77,7 @@ python nima/cli.py train_model --path_to_save_csv $PATH_TO_CSV \
 Use tensorboard to tracking training progress
 
 ```bash
-tensorboard --logdir .
+tensorboard --logdir . --port 8888 --ip 0.0.0.0
 ```
 Validate model on val and test datasets
 ```bash

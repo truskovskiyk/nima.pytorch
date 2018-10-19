@@ -3,12 +3,15 @@ from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
+from tqdm import tqdm
 
-from nima.model import NIMA
-from nima.train.datasets import AVADataset
-from nima.models.emd_loss import EDMLoss
+
+from nima.dataset import AVADataset
 from nima.common import Transform
 from nima.utils import AverageMeter
+
+from nima.models.model import create_model
+from nima.models.emd_loss import EDMLoss
 
 use_gpu = torch.cuda.is_available()
 device = torch.device("cuda" if use_gpu else "cpu")
@@ -19,6 +22,7 @@ class Trainer:
                  path_to_save_csv: Path,
                  path_to_images: Path,
                  num_epoch: int,
+                 base_model: str,
                  num_workers: int,
                  batch_size: int,
                  init_lr: float,
@@ -37,7 +41,7 @@ class Trainer:
         self.global_train_step = 0
         self.global_val_step = 0
 
-        self.model = NIMA().to(device)
+        self.model = create_model(base_model).to(device)
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=init_lr)
         self.criterion = EDMLoss().to(device)
 
@@ -49,12 +53,12 @@ class Trainer:
             self.writer.add_scalar("train/loss", train_loss, global_step=e)
             self.writer.add_scalar("val/loss", val_loss, global_step=e)
 
-            torch.save(self.model.module.state_dict(), self.experiment_dir / f'epoch_{e}.pth')
+            torch.save(self.model.state_dict(), self.experiment_dir / f'epoch_{e}.pth')
 
     def train(self):
         self.model.train()
         train_losses = AverageMeter()
-        for (x, y) in self.train_loader:
+        for (x, y) in tqdm(self.train_loader):
             x = x.to(device)
             y = y.to(device)
             y_pred = self.model(x)
@@ -75,7 +79,7 @@ class Trainer:
         validate_losses = AverageMeter()
 
         with torch.no_grad():
-            for (x, y) in self.val_loader:
+            for (x, y) in tqdm(self.val_loader):
                 x = x.to(device)
                 y = y.to(device)
                 y_pred = self.model(x)
