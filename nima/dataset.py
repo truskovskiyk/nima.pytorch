@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pandas as pd
-import numpy as np
 
 from torch.utils.data import Dataset
 from torchvision.datasets.folder import default_loader
