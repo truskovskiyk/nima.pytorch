@@ -5,16 +5,12 @@ from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
-
 from nima.dataset import AVADataset
 from nima.common import Transform
 from nima.utils import AverageMeter
 
 from nima.models.model import create_model
 from nima.models.emd_loss import EDMLoss
-
-use_gpu = torch.cuda.is_available()
-device = torch.device("cuda" if use_gpu else "cpu")
 
 
 class Trainer:
@@ -27,6 +23,9 @@ class Trainer:
                  batch_size: int,
                  init_lr: float,
                  experiment_dir: Path):
+
+        use_gpu = torch.cuda.is_available()
+        self.device = torch.device("cuda" if use_gpu else "cpu")
 
         transform = Transform()
         train_ds = AVADataset(path_to_save_csv / 'train.csv', path_to_images, transform.train_transform)
@@ -41,9 +40,9 @@ class Trainer:
         self.global_train_step = 0
         self.global_val_step = 0
 
-        self.model = create_model(base_model).to(device)
+        self.model = create_model(base_model).to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=init_lr)
-        self.criterion = EDMLoss().to(device)
+        self.criterion = EDMLoss().to(self.device)
 
     def train_model(self):
         for e in range(1, self.num_epoch + 1):
@@ -59,8 +58,8 @@ class Trainer:
         self.model.train()
         train_losses = AverageMeter()
         for (x, y) in tqdm(self.train_loader):
-            x = x.to(device)
-            y = y.to(device)
+            x = x.to(self.device)
+            y = y.to(self.device)
             y_pred = self.model(x)
             loss = self.criterion(p_target=y, p_estimate=y_pred)
             self.optimizer.zero_grad()
@@ -80,8 +79,8 @@ class Trainer:
 
         with torch.no_grad():
             for (x, y) in tqdm(self.val_loader):
-                x = x.to(device)
-                y = y.to(device)
+                x = x.to(self.device)
+                y = y.to(self.device)
                 y_pred = self.model(x)
                 loss = self.criterion(p_target=y, p_estimate=y_pred)
                 validate_losses.update(loss.item(), x.size(0))

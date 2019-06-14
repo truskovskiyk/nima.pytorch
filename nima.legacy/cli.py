@@ -6,6 +6,8 @@ from nima.clean_dataset import clean_and_split
 from nima.models import Trainer
 
 
+
+
 # from nima.train.utils import TrainParams, ValidateParams
 # from nima.train.main import start_train, start_check_model
 # from nima.inference.inference_model import InferenceModel
@@ -83,8 +85,9 @@ def train_model(path_to_save_csv: Path, path_to_images: Path, experiment_dir: Pa
 
 cli.add_command(prepare_dataset)
 cli.add_command(train_model)
-# cli.add_command(validate_model)
-# cli.add_command(get_image_score)
+cli.add_command(validate_model)
+cli.add_command(get_image_score)
+cli.add_command(run_web_app)
 
 if __name__ == '__main__':
     cli()

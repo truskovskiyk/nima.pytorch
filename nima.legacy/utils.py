@@ -13,3 +13,11 @@ class AverageMeter(object):
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
+
+
+def set_up_logging():
+    pass
+
+
+def set_up_seed(seed=42):
+    pass
