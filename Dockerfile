@@ -1,10 +1,46 @@
-FROM floydhub/dl-base:3.0.0-gpu-py3.22
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
-ENV LC_ALL C.UTF-8
-ENV LANG C.UTF-8
+## CLeanup
+RUN rm -rf /var/lib/apt/lists/* \
+           /etc/apt/sources.list.d/cuda.list \
+           /etc/apt/sources.list.d/nvidia-ml.list
 
-RUN apt-get update
-RUN apt-get install -y python3-tk zlib1g-dev libjpeg-dev
+ARG APT_INSTALL="apt-get install -y --no-install-recommends"
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive ${APT_INSTALL} \
+        python3.7 \
+        python3.7-dev \
+        python3-distutils-extra \
+        wget && \
+    apt-get clean && \
+    rm /var/lib/apt/lists/*_*
+
+# Link python to python3
+RUN ln -s /usr/bin/python3.7 /usr/local/bin/python3 && \
+    ln -s /usr/bin/python3.7 /usr/local/bin/python
+
+# Setuptools
+RUN wget https://bootstrap.pypa.io/get-pip.py
+RUN python get-pip.py
+RUN rm get-pip.py
+
+## Locale
+# Setup utf8 support for python
+RUN apt-get update &&  \
+    ${APT_INSTALL} locales && \
+    apt-get clean && \
+    rm /var/lib/apt/lists/*_*
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+ENV PYTHONIOENCODING=utf-8
+
+EXPOSE 8080
+
+#RUN apt-get update
+#RUN apt-get install -y python3-tk zlib1g-dev libjpeg-dev
 
 
 ENV APP_DIR /app

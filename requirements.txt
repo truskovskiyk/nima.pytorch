@@ -1,14 +1,1 @@
-Flask==0.12.2
-gunicorn==19.7.1
-ipython==6.2.1
-pandas==0.22.0
-tqdm==4.19.5
-scikit-learn==0.19.1
-scipy==1.0.0
-python-decouple==3.1
-requests==2.18.4
-flasgger==0.8.1
-tensorflow==1.6.0
-tensorboardX==1.1
-torch==1.0.1.post2
-torchvision==0.2.1
+Click==7.0

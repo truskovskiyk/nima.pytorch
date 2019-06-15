@@ -2,7 +2,7 @@ defaults: &defaults
   machine:
     image: circleci/classic:201711-01
     docker_layer_caching: true
-  working_directory: ~/app
+  working_directory: ~/nima
 
 
 version: 2
@@ -13,22 +13,33 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Dependencies
+          name: Build Docker image
           command: |
-            sudo bash -c "yes | add-apt-repository ppa:jonathonf/python-3.6 && apt-get update && apt-get install -y python3.6 python3.6-dev python3.6-tk"
+            make build_docker
+
+      - run:
+          name: Run style tests
+          command: |
+            make run_lint
+
+      - run:
+          name: Run integration tests
+          command: |
+            make run_unit
+
       - run:
           name: Run unit tests
           command: |
-            make run_tests
+            make run_integration
 
   deploy:
     <<: *defaults
     steps:
       - checkout
       - run:
-          name: Building and pushing docker images
+          name: Pushing docker images
           command: |
-            make build_and_push_docker
+            make push_docker
 
 workflows:
   version: 2
