@@ -17,20 +17,20 @@ jobs:
           command: |
             make build_docker
 
-      - run:
-          name: Run style tests
-          command: |
-            make run_lint
-
-      - run:
-          name: Run integration tests
-          command: |
-            make run_unit
-
-      - run:
-          name: Run unit tests
-          command: |
-            make run_integration
+#      - run:
+#          name: Run style tests
+#          command: |
+#            make run_lint
+#
+#      - run:
+#          name: Run integration tests
+#          command: |
+#            make run_unit
+#
+#      - run:
+#          name: Run unit tests
+#          command: |
+#            make run_integration
 
   deploy:
     <<: *defaults
@@ -49,9 +49,9 @@ workflows:
           context: org-global
       - deploy:
           context: org-global
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - master
+#          requires:
+#            - test
+#          filters:
+#            branches:
+#              only:
+#                - master
