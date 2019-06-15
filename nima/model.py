@@ -2,11 +2,11 @@ import torch.nn as nn
 import torchvision as tv
 
 MODELS = {
-    'resnet18': (tv.models.resnet18, 512),
-    'resnet34': (tv.models.resnet34, 512),
-    'resnet50': (tv.models.resnet50, 2048),
-    'resnet101': (tv.models.resnet101, 2048),
-    'resnet152': (tv.models.resnet152, 2048),
+    "resnet18": (tv.models.resnet18, 512),
+    "resnet34": (tv.models.resnet34, 512),
+    "resnet50": (tv.models.resnet50, 2048),
+    "resnet101": (tv.models.resnet101, 2048),
+    "resnet152": (tv.models.resnet152, 2048),
 }
 
 
@@ -23,10 +23,7 @@ class NIMA(nn.Module):
         self.base_model = base_model
 
         self.head = nn.Sequential(
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.75),
-            nn.Linear(input_features, 10),
-            nn.Softmax(dim=1)
+            nn.ReLU(inplace=True), nn.Dropout(p=0.75), nn.Linear(input_features, 10), nn.Softmax(dim=1)
         )
 
     def forward(self, x):

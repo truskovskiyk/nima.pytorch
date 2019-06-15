@@ -65,12 +65,10 @@ def clean_and_split(
     logger.info("train val test split")
     df_train, df_val_test = train_test_split(df, train_size=train_size)
     df_val, df_test = train_test_split(df_val_test, train_size=0.5)
-    train_path = path_to_save_csv / 'train.csv'
-    val_path = path_to_save_csv / 'val.csv'
-    test_path = path_to_save_csv / 'test.csv'
-    logger.info(
-        f"saving to {train_path} {val_path} and {test_path}"
-    )
+    train_path = path_to_save_csv / "train.csv"
+    val_path = path_to_save_csv / "val.csv"
+    test_path = path_to_save_csv / "test.csv"
+    logger.info(f"saving to {train_path} {val_path} and {test_path}")
     df_train.to_csv(train_path, index=False)
     df_val.to_csv(val_path, index=False)
     df_test.to_csv(test_path, index=False)

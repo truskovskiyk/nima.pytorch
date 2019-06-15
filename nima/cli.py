@@ -43,7 +43,6 @@ def prepare_dataset(
 @click.option("--path_to_save_csv", help="where save train.csv|val.csv|test.csv", required=True, type=Path)
 @click.option("--path_to_images", help="images directory", required=True, type=Path)
 @click.option("--experiment_dir", help="directory name to save all logs and weight", required=True, type=Path)
-
 @click.option("--model_type", help="res net model type", default="resnet18", type=str)
 @click.option("--batch_size", help="batch size", default=128, type=int)
 @click.option("--num_workers", help="number of reading workers", default=32, type=int)
@@ -60,7 +59,7 @@ def train_model(
     num_workers: int,
     num_epoch: int,
     init_lr: float,
-    drop_out:float,
+    drop_out: float,
     optimizer_type: str,
 ):
     click.echo("Train and validate model")
