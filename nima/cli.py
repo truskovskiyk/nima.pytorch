@@ -4,10 +4,7 @@ from pathlib import Path
 import click
 
 from nima.clean_dataset import clean_and_split
-
-# from nima.train.utils import TrainParams, ValidateParams
-# from nima.train.main import start_train, start_check_model
-# from nima.inference.inference_model import InferenceModel
+from nima.trainer import Trainer
 
 
 def init_logging() -> None:
@@ -63,15 +60,19 @@ def train_model(
     optimizer_type: str,
 ):
     click.echo("Train and validate model")
-    # trainer = Trainer(path_to_save_csv=path_to_save_csv,
-    #                   path_to_images=path_to_images,
-    #                   experiment_dir=experiment_dir,
-    #                   base_model=base_model,
-    #                   batch_size=batch_size,
-    #                   num_workers=num_workers,
-    #                   num_epoch=num_epoch,
-    #                   init_lr=init_lr)
-    # trainer.train_model()
+    trainer = Trainer(
+        path_to_save_csv=path_to_save_csv,
+        path_to_images=path_to_images,
+        experiment_dir=experiment_dir,
+        base_model=base_model,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        num_epoch=num_epoch,
+        init_lr=init_lr,
+        drop_out=drop_out,
+        optimizer_type=optimizer_type,
+    )
+    trainer.train_model()
     click.echo("Done!")
 
 

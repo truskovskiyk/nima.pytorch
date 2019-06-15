@@ -1,6 +1,10 @@
 ```
 neuro submit -n nima -g 1 -c 6 -m 24G --gpu-model nvidia-tesla-v100 --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw -v storage://truskovskiyk/code/nima.pytorch/:/code/ image:faces
 
+
+python nima/cli.py prepare-dataset --path_to_ava_txt /data/ava/AVA.txt --path_to_save_csv  /data/ --path_to_images /data/images/
+
+
 ```
 
 # PyTorch NIMA: Neural IMage Assessment

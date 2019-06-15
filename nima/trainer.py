@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Tuple
 
 import torch
 from torch.utils.data import DataLoader
@@ -11,9 +12,21 @@ from nima.emd_loss import EDMLoss
 from nima.model import create_model
 
 
+def get_dataloaders(
+    path_to_save_csv: Path, path_to_images: Path, batch_size: int, num_workers: int
+) -> Tuple[DataLoader, DataLoader]:
+    transform = Transform()
+    train_ds = AVADataset(path_to_save_csv / "train.csv", path_to_images, transform.train_transform)
+    val_ds = AVADataset(path_to_save_csv / "val.csv", path_to_images, transform.val_transform)
+    train_loader = DataLoader(train_ds, batch_size=batch_size, num_workers=num_workers, shuffle=True)
+    val_loader = DataLoader(val_ds, batch_size=batch_size, num_workers=num_workers, shuffle=False)
+    return train_loader, val_loader
+
+
 class Trainer:
     def __init__(
         self,
+        *,
         path_to_save_csv: Path,
         path_to_images: Path,
         num_epoch: int,
@@ -22,16 +35,24 @@ class Trainer:
         batch_size: int,
         init_lr: float,
         experiment_dir: Path,
+        drop_out: float,
+        optimizer_type: str,
     ):
 
-        use_gpu = torch.cuda.is_available()
-        self.device = torch.device("cuda" if use_gpu else "cpu")
+        train_loader, val_loader = get_dataloaders(
+            path_to_save_csv=path_to_save_csv,
+            path_to_images=path_to_images,
+            batch_size=batch_size,
+            num_workers=num_workers,
+        )
+        self.train_loader = train_loader
+        self.val_loader = val_loader
 
-        transform = Transform()
-        train_ds = AVADataset(path_to_save_csv / "train.csv", path_to_images, transform.train_transform)
-        val_ds = AVADataset(path_to_save_csv / "val.csv", path_to_images, transform.val_transform)
-        self.train_loader = DataLoader(train_ds, batch_size=batch_size, num_workers=num_workers, shuffle=True)
-        self.val_loader = DataLoader(val_ds, batch_size=batch_size, num_workers=num_workers, shuffle=False)
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = create_model(base_model, drop_out=drop_out).to(self.device)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=init_lr)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=self.optimizer, mode="min", patience=5)
+        self.criterion = EDMLoss().to(self.device)
 
         experiment_dir.mkdir(exist_ok=True)
         self.experiment_dir = experiment_dir
@@ -40,14 +61,11 @@ class Trainer:
         self.global_train_step = 0
         self.global_val_step = 0
 
-        self.model = create_model(base_model).to(self.device)
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=init_lr)
-        self.criterion = EDMLoss().to(self.device)
-
     def train_model(self):
         for e in range(1, self.num_epoch + 1):
             train_loss = self.train()
             val_loss = self.validate()
+            self.scheduler.step(metrics=val_loss)
 
             self.writer.add_scalar("train/loss", train_loss, global_step=e)
             self.writer.add_scalar("val/loss", val_loss, global_step=e)

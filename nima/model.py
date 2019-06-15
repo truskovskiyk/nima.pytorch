@@ -10,20 +10,20 @@ MODELS = {
 }
 
 
-def create_model(base_model_name: str = None) -> nn.Module:
+def create_model(base_model_name: str, drop_out: float) -> nn.Module:
     create_function, input_features = MODELS[base_model_name]
     base_model = create_function(pretrained=True)
     base_model = nn.Sequential(*list(base_model.children())[:-1])
-    return NIMA(base_model=base_model, input_features=input_features)
+    return NIMA(base_model=base_model, input_features=input_features, drop_out=drop_out)
 
 
 class NIMA(nn.Module):
-    def __init__(self, base_model: nn.Module, input_features: int):
+    def __init__(self, base_model: nn.Module, input_features: int, drop_out: float):
         super(NIMA, self).__init__()
         self.base_model = base_model
 
         self.head = nn.Sequential(
-            nn.ReLU(inplace=True), nn.Dropout(p=0.75), nn.Linear(input_features, 10), nn.Softmax(dim=1)
+            nn.ReLU(inplace=True), nn.Dropout(p=drop_out), nn.Linear(input_features, 10), nn.Softmax(dim=1)
         )
 
     def forward(self, x):
