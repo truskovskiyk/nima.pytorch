@@ -47,8 +47,8 @@ ENV APP_DIR /app
 WORKDIR $APP_DIR
 
 # if CPU SSE4-capable add pillow-simd with AVX2-enabled version
-RUN pip uninstall -y pillow
-RUN CC="cc -mavx2" pip install -U --force-reinstall pillow-simd
+#RUN pip uninstall -y pillow
+#RUN CC="cc -mavx2" pip install -U --force-reinstall pillow-simd
 
 
 COPY requirements.txt requirements.txt
