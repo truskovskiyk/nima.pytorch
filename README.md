@@ -1,3 +1,8 @@
+```
+neuro submit -n nima -g 1 -c 6 -m 24G --gpu-model nvidia-tesla-v100 --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw -v storage://truskovskiyk/code/nima.pytorch/:/code/ image:faces
+
+```
+
 # PyTorch NIMA: Neural IMage Assessment
 
 PyTorch implementation of [Neural IMage Assessment](https://arxiv.org/abs/1709.05424) by Hossein Talebi and Peyman Milanfar. You can learn more from [this post at Google Research Blog](https://research.googleblog.com/2017/12/introducing-nima-neural-image-assessment.html). 
