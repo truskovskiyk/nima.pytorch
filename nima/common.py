@@ -1,5 +1,6 @@
 import os
 
+import torch
 import numpy as np
 import requests
 from torchvision import transforms
@@ -72,3 +73,18 @@ class AverageMeter(object):
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
+
+
+def set_up_seed(seed=42):
+    torch.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(seed)
+
+
+def format_output(mean_score, std_score, prob):
+    return {
+        'mean_score': float(mean_score),
+        'std_score': float(std_score),
+        'scores': [float(x) for x in prob]
+    }

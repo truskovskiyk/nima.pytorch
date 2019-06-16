@@ -4,6 +4,17 @@ neuro submit -n nima -g 1 -c 6 -m 24G --gpu-model nvidia-tesla-v100 --http 8080 
 
 python nima/cli.py prepare-dataset --path_to_ava_txt /data/ava/AVA.txt --path_to_save_csv  /data/ --path_to_images /data/images/
 
+python nima/cli.py train-model --path_to_save_csv /data/ --path_to_images /data/images/ --experiment_dir /data/exp/t1 --batch_size 256
+
+python nima/cli.py validate-model --path_to_model_state /data/exp/t1/best_state.pth --path_to_save_csv /data/ --path_to_images /data/images/
+
+
+python nima/cli.py get-image-score --path_to_model_state /data/exp/t1/best_state.pth --path_to_image /data/images/651709.jpg
+
+
+python nima/cli.py run-web-api --path_to_model_state best_state.pth
+curl  -X POST -F "file=@test.jpg" 0.0.0.0:8080/predict
+
 
 ```
 

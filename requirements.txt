@@ -6,6 +6,10 @@ tqdm==4.32.1
 torch==1.1.0
 torchvision==0.3.0
 requests==2.22.0
+tensorboard==1.14.0
+python-decouple==3.1
 black==19.3b0
 isort==4.3.20
 flake8==3.7.7
+pytest==4.6.3
+ipython==7.5.0

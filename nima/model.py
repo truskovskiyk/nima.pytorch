@@ -9,14 +9,6 @@ MODELS = {
     "resnet152": (tv.models.resnet152, 2048),
 }
 
-
-def create_model(base_model_name: str, drop_out: float) -> nn.Module:
-    create_function, input_features = MODELS[base_model_name]
-    base_model = create_function(pretrained=True)
-    base_model = nn.Sequential(*list(base_model.children())[:-1])
-    return NIMA(base_model=base_model, input_features=input_features, drop_out=drop_out)
-
-
 class NIMA(nn.Module):
     def __init__(self, base_model: nn.Module, input_features: int, drop_out: float):
         super(NIMA, self).__init__()
@@ -31,3 +23,12 @@ class NIMA(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.head(x)
         return x
+
+
+def create_model(model_type: str, drop_out: float) -> NIMA:
+    create_function, input_features = MODELS[model_type]
+    base_model = create_function(pretrained=True)
+    base_model = nn.Sequential(*list(base_model.children())[:-1])
+    return NIMA(base_model=base_model, input_features=input_features, drop_out=drop_out)
+
+
