@@ -86,7 +86,6 @@ def get_image_score(path_to_model_state, path_to_image):
     model = InferenceModel(path_to_model_state=path_to_model_state)
     result = model.predict_from_file(path_to_image)
     click.echo(result)
-    click.echo("Done!")
 
 
 @click.command()
@@ -114,7 +113,6 @@ def validate_model(path_to_model_state, path_to_save_csv, path_to_images, batch_
 @click.option("--host", help="host for web app", default="0.0.0.0", type=str)
 def run_web_api(path_to_model_state: Path, port: int, host: str):
     run_api(path_to_model_state=path_to_model_state, port=port, host=host)
-    click.echo("Done!")
 
 
 def main():

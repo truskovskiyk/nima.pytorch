@@ -15,9 +15,13 @@ format:
 	black --line-length=$(LINE_LENGTH) $(SRC)
 
 
-.PHONY: test
+.PHONY: test_integration
 test_integration:
-	pytest -vv -ss --cov-config=setup.cfg --cov $(SRC)
+	pytest -vv -ss --cov-config=setup.cfg --cov nima tests/integration
+
+.PHONY: test_unit
+test_unit:
+	pytest -vv -ss --cov-config=setup.cfg --cov nima tests/unit
 
 .PHONY: build_docker
 build_docker:
@@ -36,8 +40,8 @@ run_lint: build_docker
 
 .PHONY: run_unit
 run_unit: build_docker
-	docker run -it $(IMAGE_NAME):latest make test
+	docker run -it $(IMAGE_NAME):latest make test_unit
 
 .PHONY: run_integration
 run_integration: build_docker
-	docker run -it $(IMAGE_NAME):latest make test
+	docker run -it $(IMAGE_NAME):latest make test_integration
