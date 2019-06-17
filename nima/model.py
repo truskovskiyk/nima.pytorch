@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torchvision as tv
 
+
 MODELS = {
     "resnet18": (tv.models.resnet18, 512),
     "resnet34": (tv.models.resnet34, 512),

@@ -10,6 +10,7 @@ from PIL import Image
 
 from nima.inference_model import InferenceModel
 
+
 logger = logging.getLogger(__name__)
 _model = None
 

@@ -7,6 +7,7 @@ from torchvision.datasets.folder import default_loader
 from nima.common import Transform, format_output, get_mean_score, get_std_score
 from nima.model import create_model
 
+
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 

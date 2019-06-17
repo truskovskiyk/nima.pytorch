@@ -12,6 +12,7 @@ from PIL import Image
 
 from nima.worker import WorkersConfig, init_workers, predict
 
+
 logger = logging.getLogger(__name__)
 
 

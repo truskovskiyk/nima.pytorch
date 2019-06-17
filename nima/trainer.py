@@ -11,7 +11,8 @@ from tqdm import tqdm
 from nima.common import AverageMeter, Transform
 from nima.dataset import AVADataset
 from nima.emd_loss import EDMLoss
-from nima.model import create_model, NIMA
+from nima.model import NIMA, create_model
+
 
 logger = logging.getLogger(__file__)
 
@@ -78,9 +79,9 @@ def validate_and_test(
 
 
 def get_optimizer(optimizer_type: str, model: NIMA, init_lr: float) -> torch.optim.Optimizer:
-    if optimizer_type == 'adam':
+    if optimizer_type == "adam":
         optimizer = torch.optim.Adam(model.parameters(), lr=init_lr)
-    elif optimizer_type == 'sgd':
+    elif optimizer_type == "sgd":
         optimizer = torch.optim.SGD(model.parameters(), lr=init_lr, momentum=0.5, weight_decay=9)
     else:
         raise ValueError(f"not such optimizer {optimizer_type}")
@@ -140,10 +141,12 @@ class Trainer:
             if best_state is None or val_loss < best_loss:
                 logger.info(f"updated loss from {best_loss} to {val_loss}")
                 best_loss = val_loss
-                best_state = {"state_dict": self.model.state_dict(),
-                              "model_type": self.model_type,
-                              "epoch": e,
-                              'best_loss': best_loss}
+                best_state = {
+                    "state_dict": self.model.state_dict(),
+                    "model_type": self.model_type,
+                    "epoch": e,
+                    "best_loss": best_loss,
+                }
                 torch.save(best_state, self.experiment_dir / "best_state.pth")
 
     def train(self):
