@@ -49,9 +49,5 @@ workflows:
           context: org-global
       - deploy:
           context: org-global
-#          requires:
-#            - test
-#          filters:
-#            branches:
-#              only:
-#                - master
+          requires:
+            - test
