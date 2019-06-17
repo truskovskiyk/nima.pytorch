@@ -1,11 +1,11 @@
 import io
-from typing import NamedTuple, AsyncIterator
-from pathlib import Path
+from typing import AsyncIterator, NamedTuple
+
 import aiohttp
 import pytest
 from aiohttp import FormData
 from aiohttp.web import HTTPOk
-from PIL import Image
+
 from nima.api import Config, ServerConfig, WorkersConfig, create_app
 
 
@@ -52,31 +52,20 @@ async def client() -> AsyncIterator[aiohttp.ClientSession]:
 
 
 class TestModelApi:
-
     @pytest.mark.asyncio
-    async def test_predict(self,
-                                api: ApiConfig,
-                                client: aiohttp.ClientSession,
-                                image_file_obj: io.BytesIO
-                                ) -> None:
+    async def test_predict(self, api: ApiConfig, client: aiohttp.ClientSession, image_file_obj: io.BytesIO) -> None:
         predict_url = api.model_base_url + "/predict"
 
         data = FormData()
-        data.add_field(
-            "file",
-            image_file_obj,
-            filename="test_image.jpg",
-            content_type="image/img",
-        )
+        data.add_field("file", image_file_obj, filename="test_image.jpg", content_type="image/img")
 
         async with client.post(predict_url, data=data) as response:
             assert response.status == HTTPOk.status_code
             res_data = await response.json()
-            assert 'mean_score' in res_data
-            assert 'std_score' in res_data
-            assert 'scores' in res_data
-            assert 'total_time' in res_data
-
+            assert "mean_score" in res_data
+            assert "std_score" in res_data
+            assert "scores" in res_data
+            assert "total_time" in res_data
 
 
 class TestApi:

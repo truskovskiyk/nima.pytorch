@@ -4,7 +4,7 @@ from typing import Tuple
 
 import torch
 import torch.optim
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
