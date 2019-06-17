@@ -26,10 +26,6 @@ def get_dataloaders(
     val_ds = AVADataset(path_to_save_csv / "val.csv", path_to_images, transform.val_transform)
     test_ds = AVADataset(path_to_save_csv / "test.csv", path_to_images, transform.val_transform)
 
-    train_ds = Subset(train_ds, indices=list(range(100)))
-    val_ds = Subset(val_ds, indices=list(range(100)))
-    test_ds = Subset(test_ds, indices=list(range(100)))
-
     train_loader = DataLoader(train_ds, batch_size=batch_size, num_workers=num_workers, shuffle=True)
     val_loader = DataLoader(val_ds, batch_size=batch_size, num_workers=num_workers, shuffle=False)
     test_ds = DataLoader(test_ds, batch_size=batch_size, num_workers=num_workers, shuffle=False)
