@@ -23,12 +23,12 @@ jobs:
             make run_lint
 
       - run:
-          name: Run integration tests
+          name: Run unit tests
           command: |
             make run_unit
 
       - run:
-          name: Run unit tests
+          name: Run integration tests
           command: |
             make run_integration
 

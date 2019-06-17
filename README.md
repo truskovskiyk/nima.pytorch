@@ -2,9 +2,13 @@
 neuro submit -n nima -g 1 -c 6 -m 24G --gpu-model nvidia-tesla-v100 --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw -v storage://truskovskiyk/code/nima.pytorch/:/code/ image:faces
 
 
+neuro submit -n nima-train -g 1 -c 6 -m 18G --gpu-model nvidia-tesla-k80 --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw truskovskyi/nima:latest "python nima/cli.py train-model --batch_size 64 --model_type resnet34 --path_to_save_csv /data/ --path_to_images /data/images/ --experiment_dir /data/exp/t1-resnet34"
+
+
+
 python nima/cli.py prepare-dataset --path_to_ava_txt /data/ava/AVA.txt --path_to_save_csv  /data/ --path_to_images /data/images/
 
-python nima/cli.py train-model --path_to_save_csv /data/ --path_to_images /data/images/ --experiment_dir /data/exp/t1 --batch_size 256
+python nima/cli.py train-model --batch_size 64 --model_type resnet34 --path_to_save_csv /data/ --path_to_images /data/images/ --experiment_dir /data/exp/t1-resnet34
 
 python nima/cli.py validate-model --path_to_model_state /data/exp/t1/best_state.pth --path_to_save_csv /data/ --path_to_images /data/images/
 
