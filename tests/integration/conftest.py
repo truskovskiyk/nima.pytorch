@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import shutil
 
 import pytest
 import torch
@@ -41,6 +42,40 @@ def image_path(data_dir: Path):
     yield image_path
 
     os.remove(image_path)
+
+@pytest.yield_fixture
+def images_path(image_path: Path) -> Path:
+    return image_path.parents[0]
+
+
+@pytest.yield_fixture
+def ava_csv_path(data_dir: Path):
+    data = [
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n",
+        "1 tmp_test_image 0 1 5 17 38 36 15 6 5 1 1 22 1396\n"
+    ]
+
+    temp_ava_path = data_dir / 'tmp_test_ava.csv'
+    with open(temp_ava_path, 'w') as f:
+        f.writelines(data)
+    yield temp_ava_path
+    os.remove(temp_ava_path)
+
+
+@pytest.yield_fixture
+def path_to_save_result(data_dir: Path):
+    temp_dir_with_results = data_dir / 'temp_results'
+    temp_dir_with_results.mkdir(parents=True, exist_ok=False)
+    yield temp_dir_with_results
+    shutil.rmtree(temp_dir_with_results)
 
 
 @pytest.fixture
