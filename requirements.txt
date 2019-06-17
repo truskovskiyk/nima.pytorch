@@ -6,6 +6,7 @@ tqdm==4.32.1
 torch==1.1.0
 torchvision==0.3.0
 tensorboard==1.14.0
+aiohttp==3.5.4
 black==19.3b0
 isort==4.3.20
 flake8==3.7.7

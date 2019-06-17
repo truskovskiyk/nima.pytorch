@@ -5,7 +5,6 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Tuple
 
 import aiohttp.multipart
 import aiohttp.web
@@ -28,28 +27,6 @@ class ModelHandler:
     @staticmethod
     async def handle_ping(request: aiohttp.web.Request) -> aiohttp.web.Response:
         return aiohttp.web.Response()
-
-    async def parse_and_save_image(self, reader: aiohttp.multipart.MultipartReader) -> Tuple[Path, str]:
-        start_time = time.monotonic()
-        while True:
-            field = await reader.next()
-            if field is None:
-                break
-            if field.name == "box_type":
-                box_type = await field.text()
-            if field.name == "image":
-                file_path = await self._save_image(field)
-
-        end_time = time.monotonic()
-        logger.info(
-            f"save_image file_path = {file_path}, " f"box_type = {box_type}, " f"time = {end_time - start_time}"
-        )
-
-        image_path_with_box = Path(str(file_path).replace(file_path.suffix, f"_{box_type}_{file_path.suffix}"))
-
-        file_path.rename(image_path_with_box)
-
-        return image_path_with_box, box_type
 
     async def handle_predict(self, request: aiohttp.web.Request) -> aiohttp.web.Response:
         start = time.monotonic()

@@ -16,6 +16,8 @@ python nima/cli.py run-web-api --path_to_model_state best_state.pth
 curl  -X POST -F "file=@test.jpg" 0.0.0.0:8080/predict
 
 
+neuro submit -n nima-train -g 1 -c 6 -m 18G --gpu-model nvidia-tesla-k80 --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw truskovskyi/nima:latest "python nima/cli.py train-model --path_to_save_csv /data/ --path_to_images /data/images/ --experiment_dir /data/exp/auto_t1 --batch_size 256"
+
 ```
 
 # PyTorch NIMA: Neural IMage Assessment
