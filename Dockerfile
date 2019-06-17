@@ -54,3 +54,4 @@ WORKDIR $APP_DIR
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 COPY . $APP_DIR
+ENV PYTHONPATH $PYTHONPATH:.:/app/:
