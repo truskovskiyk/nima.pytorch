@@ -1,11 +1,10 @@
 import torch
 from torchvision.datasets.folder import default_loader
 from pathlib import Path
-from decouple import config
 from PIL.Image import Image
 
 from nima.model import create_model
-from nima.common import Transform, get_mean_score, get_std_score, download_file
+from nima.common import Transform, get_mean_score, get_std_score
 
 from nima.common import format_output
 

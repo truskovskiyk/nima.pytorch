@@ -1,8 +1,5 @@
-import os
-
 import torch
 import numpy as np
-import requests
 from torchvision import transforms
 
 IMAGE_NET_MEAN = [0.485, 0.456, 0.406]
@@ -45,17 +42,6 @@ def get_std_score(scores):
     mean = get_mean_score(scores)
     std = np.sqrt(np.sum(((si - mean) ** 2) * scores))
     return std
-
-
-def download_file(url, local_filename, chunk_size=1024):
-    if os.path.exists(local_filename):
-        return local_filename
-    r = requests.get(url, stream=True)
-    with open(local_filename, "wb") as f:
-        for chunk in r.iter_content(chunk_size=chunk_size):
-            if chunk:
-                f.write(chunk)
-    return local_filename
 
 
 class AverageMeter(object):

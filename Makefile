@@ -25,9 +25,9 @@ build_docker:
 
 .PHONY: push_docker
 push_docker: build_docker
-	docker tag $(IMAGE_NAME):latest truskovskiyk/$(IMAGE_NAME):latest
-	docker login -u truskovskiyk -p $(DOCKER_PASS)
-	docker push $(IMAGE_NAME):latest truskovskiyk/$(IMAGE_NAME):latest
+	docker tag $(IMAGE_NAME):latest truskovskyi/$(IMAGE_NAME):latest
+	docker login -u truskovskyi -p $(DOCKER_PASS)
+	docker push $(IMAGE_NAME):latest truskovskyi/$(IMAGE_NAME):latest
 
 
 .PHONY: run_lint
