@@ -16,7 +16,7 @@ format:
 
 
 .PHONY: test
-test:
+test_integration:
 	pytest -vv -ss --cov-config=setup.cfg --cov $(SRC)
 
 .PHONY: build_docker
