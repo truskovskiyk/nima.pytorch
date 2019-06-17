@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Tuple
 
 import torch
+import torch.optim
 from torch.utils.data import DataLoader, Subset
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
@@ -10,7 +11,7 @@ from tqdm import tqdm
 from nima.common import AverageMeter, Transform
 from nima.dataset import AVADataset
 from nima.emd_loss import EDMLoss
-from nima.model import create_model
+from nima.model import create_model, NIMA
 
 logger = logging.getLogger(__file__)
 
@@ -76,6 +77,16 @@ def validate_and_test(
     logger.info(f"val loss {validate_losses.avg}; test loss {test_losses.avg}")
 
 
+def get_optimizer(optimizer_type: str, model: NIMA, init_lr: float) -> torch.optim.Optimizer:
+    if optimizer_type == 'adam':
+        optimizer = torch.optim.Adam(model.parameters(), lr=init_lr)
+    elif optimizer_type == 'sgd':
+        optimizer = torch.optim.SGD(model.parameters(), lr=init_lr, momentum=0.5, weight_decay=9)
+    else:
+        raise ValueError(f"not such optimizer {optimizer_type}")
+    return optimizer
+
+
 class Trainer:
     def __init__(
         self,
@@ -103,7 +114,7 @@ class Trainer:
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = create_model(model_type, drop_out=drop_out).to(self.device)
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=init_lr)
+        self.optimizer = get_optimizer(optimizer_type=optimizer_type, model=self.model, init_lr=init_lr)
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=self.optimizer, mode="min", patience=5)
         self.criterion = EDMLoss().to(self.device)
         self.model_type = model_type
@@ -127,7 +138,12 @@ class Trainer:
             self.writer.add_scalar("val/loss", val_loss, global_step=e)
 
             if best_state is None or val_loss < best_loss:
-                best_state = {"state_dict": self.model.state_dict(), "model_type": self.model_type, "epoch": e}
+                logger.info(f"updated loss from {best_loss} to {val_loss}")
+                best_loss = val_loss
+                best_state = {"state_dict": self.model.state_dict(),
+                              "model_type": self.model_type,
+                              "epoch": e,
+                              'best_loss': best_loss}
                 torch.save(best_state, self.experiment_dir / "best_state.pth")
 
     def train(self):
