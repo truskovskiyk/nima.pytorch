@@ -3,11 +3,12 @@ from pathlib import Path
 
 import click
 
-from nima.clean_dataset import clean_and_split
-from nima.trainer import Trainer, validate_and_test
-from nima.inference_model import InferenceModel
-from nima.common import set_up_seed
 from nima.api import run_api
+from nima.clean_dataset import clean_and_split
+from nima.common import set_up_seed
+from nima.inference_model import InferenceModel
+from nima.trainer import Trainer, validate_and_test
+
 
 def init_logging() -> None:
     logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -25,7 +26,7 @@ def cli():
 @click.option("--train_size", help="train dataset size", default=0.8, type=float)
 @click.option("--num_workers", help="num workers for parallel processing", default=64, type=int)
 def prepare_dataset(
-        path_to_ava_txt: Path, path_to_save_csv: Path, path_to_images: Path, train_size: float, num_workers: int
+    path_to_ava_txt: Path, path_to_save_csv: Path, path_to_images: Path, train_size: float, num_workers: int
 ):
     click.echo(f"Clean and split dataset to train|val|test in {num_workers} threads. It will takes several minutes")
     clean_and_split(
@@ -50,16 +51,16 @@ def prepare_dataset(
 @click.option("--drop_out", help="drop out", default=0.5, type=float)
 @click.option("--optimizer_type", help="optimizer type", default="adam", type=str)
 def train_model(
-        path_to_save_csv: Path,
-        path_to_images: Path,
-        experiment_dir: Path,
-        model_type: str,
-        batch_size: int,
-        num_workers: int,
-        num_epoch: int,
-        init_lr: float,
-        drop_out: float,
-        optimizer_type: str,
+    path_to_save_csv: Path,
+    path_to_images: Path,
+    experiment_dir: Path,
+    model_type: str,
+    batch_size: int,
+    num_workers: int,
+    num_epoch: int,
+    init_lr: float,
+    drop_out: float,
+    optimizer_type: str,
 ):
     click.echo("Train and validate model")
     trainer = Trainer(
@@ -96,15 +97,21 @@ def get_image_score(path_to_model_state, path_to_image):
 @click.option("--num_workers", help="number of reading workers", default=16, type=int)
 @click.option("--drop_out", help="drop out", default=0.0, type=float)
 def validate_model(path_to_model_state, path_to_save_csv, path_to_images, batch_size, num_workers, drop_out):
-    validate_and_test(path_to_model_state=path_to_model_state, path_to_save_csv=path_to_save_csv,
-                      path_to_images=path_to_images, batch_size=batch_size, num_workers=num_workers, drop_out=drop_out)
+    validate_and_test(
+        path_to_model_state=path_to_model_state,
+        path_to_save_csv=path_to_save_csv,
+        path_to_images=path_to_images,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        drop_out=drop_out,
+    )
     click.echo("Done!")
 
 
 @click.command()
 @click.option("--path_to_model_state", help="path to model weight .pth file", required=True, type=Path)
 @click.option("--port", help="port for web app", default=8080, type=int)
-@click.option("--host", help="host for web app", default='0.0.0.0', type=str)
+@click.option("--host", help="host for web app", default="0.0.0.0", type=str)
 def run_web_api(path_to_model_state: Path, port: int, host: str):
     run_api(path_to_model_state=path_to_model_state, port=port, host=host)
     click.echo("Done!")

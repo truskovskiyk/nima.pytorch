@@ -1,6 +1,7 @@
+import logging
 from pathlib import Path
 from typing import Tuple
-import logging
+
 import torch
 from torch.utils.data import DataLoader, Subset
 from torch.utils.tensorboard import SummaryWriter
@@ -15,7 +16,7 @@ logger = logging.getLogger(__file__)
 
 
 def get_dataloaders(
-        path_to_save_csv: Path, path_to_images: Path, batch_size: int, num_workers: int
+    path_to_save_csv: Path, path_to_images: Path, batch_size: int, num_workers: int
 ) -> Tuple[DataLoader, DataLoader, DataLoader]:
     transform = Transform()
 
@@ -33,13 +34,16 @@ def get_dataloaders(
     return train_loader, val_loader, test_ds
 
 
-def validate_and_test(path_to_save_csv: Path, path_to_images: Path, batch_size: int, num_workers: int, drop_out: float,
-                      path_to_model_state: Path) -> None:
+def validate_and_test(
+    path_to_save_csv: Path,
+    path_to_images: Path,
+    batch_size: int,
+    num_workers: int,
+    drop_out: float,
+    path_to_model_state: Path,
+) -> None:
     _, val_loader, test_loader = get_dataloaders(
-        path_to_save_csv=path_to_save_csv,
-        path_to_images=path_to_images,
-        batch_size=batch_size,
-        num_workers=num_workers,
+        path_to_save_csv=path_to_save_csv, path_to_images=path_to_images, batch_size=batch_size, num_workers=num_workers
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -47,8 +51,8 @@ def validate_and_test(path_to_save_csv: Path, path_to_images: Path, batch_size: 
 
     best_state = torch.load(path_to_model_state)
 
-    model = create_model(best_state['model_type'], drop_out=drop_out).to(device)
-    model.load_state_dict(best_state['state_dict'])
+    model = create_model(best_state["model_type"], drop_out=drop_out).to(device)
+    model.load_state_dict(best_state["state_dict"])
 
     model.eval()
     validate_losses = AverageMeter()
@@ -74,18 +78,18 @@ def validate_and_test(path_to_save_csv: Path, path_to_images: Path, batch_size: 
 
 class Trainer:
     def __init__(
-            self,
-            *,
-            path_to_save_csv: Path,
-            path_to_images: Path,
-            num_epoch: int,
-            model_type: str,
-            num_workers: int,
-            batch_size: int,
-            init_lr: float,
-            experiment_dir: Path,
-            drop_out: float,
-            optimizer_type: str,
+        self,
+        *,
+        path_to_save_csv: Path,
+        path_to_images: Path,
+        num_epoch: int,
+        model_type: str,
+        num_workers: int,
+        batch_size: int,
+        init_lr: float,
+        experiment_dir: Path,
+        drop_out: float,
+        optimizer_type: str,
     ):
 
         train_loader, val_loader, _ = get_dataloaders(
@@ -123,10 +127,7 @@ class Trainer:
             self.writer.add_scalar("val/loss", val_loss, global_step=e)
 
             if best_state is None or val_loss < best_loss:
-                best_state = {'state_dict': self.model.state_dict(),
-                              'model_type': self.model_type,
-                              'epoch': e
-                              }
+                best_state = {"state_dict": self.model.state_dict(), "model_type": self.model_type, "epoch": e}
                 torch.save(best_state, self.experiment_dir / "best_state.pth")
 
     def train(self):

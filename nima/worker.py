@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from PIL import Image
 from aiohttp import web
+from PIL import Image
 
 from nima.inference_model import InferenceModel
 
@@ -28,9 +28,7 @@ def clean() -> None:
     _model = None
 
 
-def predict(image: Image.Image,
-            model: Optional[InferenceModel] = None
-            ):
+def predict(image: Image.Image, model: Optional[InferenceModel] = None):
     if model is None:
         model = _model
 
@@ -44,7 +42,6 @@ def predict(image: Image.Image,
 class WorkersConfig:
     path_to_model_state: Path
     max_workers: int = 1
-
 
 
 async def init_workers(app: web.Application, conf: WorkersConfig) -> ThreadPoolExecutor:

@@ -1,34 +1,31 @@
-import torch
-from torchvision.datasets.folder import default_loader
 from pathlib import Path
+
+import torch
 from PIL.Image import Image
+from torchvision.datasets.folder import default_loader
 
+from nima.common import Transform, format_output, get_mean_score, get_std_score
 from nima.model import create_model
-from nima.common import Transform, get_mean_score, get_std_score
-
-from nima.common import format_output
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
 
 class InferenceModel:
-
     def __init__(self, path_to_model_state: Path):
         self.transform = Transform().val_transform
         model_state = torch.load(path_to_model_state, map_location=lambda storage, loc: storage)
-        self.model = create_model(model_type=model_state['model_type'], drop_out=0)
-        self.model.load_state_dict(model_state['state_dict'])
+        self.model = create_model(model_type=model_state["model_type"], drop_out=0)
+        self.model.load_state_dict(model_state["state_dict"])
         self.model = self.model.to(device)
         self.model.eval()
-
 
     def predict_from_file(self, image_path: Path):
         image = default_loader(image_path)
         return self.predict(image)
 
     def predict_from_pil_image(self, image: Image):
-        image = image.convert('RGB')
+        image = image.convert("RGB")
         return self.predict(image)
 
     @torch.no_grad()

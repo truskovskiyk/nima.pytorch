@@ -1,5 +1,5 @@
-import torch
 import numpy as np
+import torch
 from torchvision import transforms
 
 IMAGE_NET_MEAN = [0.485, 0.456, 0.406]
@@ -69,8 +69,4 @@ def set_up_seed(seed=42):
 
 
 def format_output(mean_score, std_score, prob):
-    return {
-        'mean_score': float(mean_score),
-        'std_score': float(std_score),
-        'scores': [float(x) for x in prob]
-    }
+    return {"mean_score": float(mean_score), "std_score": float(std_score), "scores": [float(x) for x in prob]}

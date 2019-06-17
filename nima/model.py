@@ -9,6 +9,7 @@ MODELS = {
     "resnet152": (tv.models.resnet152, 2048),
 }
 
+
 class NIMA(nn.Module):
     def __init__(self, base_model: nn.Module, input_features: int, drop_out: float):
         super(NIMA, self).__init__()
@@ -30,5 +31,3 @@ def create_model(model_type: str, drop_out: float) -> NIMA:
     base_model = create_function(pretrained=True)
     base_model = nn.Sequential(*list(base_model.children())[:-1])
     return NIMA(base_model=base_model, input_features=input_features, drop_out=drop_out)
-
-
