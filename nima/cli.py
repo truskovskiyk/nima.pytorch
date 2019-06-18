@@ -50,6 +50,7 @@ def prepare_dataset(
 @click.option("--init_lr", help="initial learning rate", default=0.0001, type=float)
 @click.option("--drop_out", help="drop out", default=0.5, type=float)
 @click.option("--optimizer_type", help="optimizer type", default="adam", type=str)
+@click.option("--seed", help="random seed", default=42, type=int)
 def train_model(
     path_to_save_csv: Path,
     path_to_images: Path,
@@ -61,8 +62,10 @@ def train_model(
     init_lr: float,
     drop_out: float,
     optimizer_type: str,
+    seed: int
 ):
     click.echo("Train and validate model")
+    set_up_seed(seed)
     trainer = Trainer(
         path_to_save_csv=path_to_save_csv,
         path_to_images=path_to_images,
@@ -117,7 +120,6 @@ def run_web_api(path_to_model_state: Path, port: int, host: str):
 
 def main():
     init_logging()
-    set_up_seed()
     cli.add_command(prepare_dataset)
     cli.add_command(train_model)
     cli.add_command(validate_model)
