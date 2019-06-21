@@ -39,19 +39,16 @@ ENV PYTHONIOENCODING=utf-8
 
 EXPOSE 8080
 
-#RUN apt-get update
-#RUN apt-get install -y python3-tk zlib1g-dev libjpeg-dev
-
 
 ENV APP_DIR /app
 WORKDIR $APP_DIR
 
-# if CPU SSE4-capable add pillow-simd with AVX2-enabled version
-#RUN pip uninstall -y pillow
-#RUN CC="cc -mavx2" pip install -U --force-reinstall pillow-simd
-
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+
+RUN git clone https://github.com/NVIDIA/apex && cd apex && pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
+
+
 COPY . $APP_DIR
 ENV PYTHONPATH $PYTHONPATH:.:/app/:
