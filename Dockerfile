@@ -12,6 +12,7 @@ RUN apt-get update && \
         python3.7 \
         python3.7-dev \
         python3-distutils-extra \
+        git \
         wget && \
     apt-get clean && \
     rm /var/lib/apt/lists/*_*
@@ -47,7 +48,7 @@ WORKDIR $APP_DIR
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-RUN git clone https://github.com/NVIDIA/apex && cd apex && pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
+#RUN git clone https://github.com/NVIDIA/apex && cd apex && pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
 
 
 COPY . $APP_DIR
