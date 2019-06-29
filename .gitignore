@@ -100,7 +100,8 @@ ENV/
 # mypy
 .mypy_cache/
 .idea/
-DATA/
 *.pth
 test.jpg
 custom_setup.md
+.pytest_cache/
+hs/

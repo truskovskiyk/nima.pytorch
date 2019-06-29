@@ -1,0 +1,53 @@
+defaults: &defaults
+  machine:
+    image: circleci/classic:201711-01
+    docker_layer_caching: true
+  working_directory: ~/nima
+
+
+version: 2
+
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Build Docker image
+          command: |
+            make build_docker
+
+      - run:
+          name: Run style tests
+          command: |
+            make run_lint
+
+      - run:
+          name: Run unit tests
+          command: |
+            make run_unit
+
+      - run:
+          name: Run integration tests
+          command: |
+            make run_integration
+
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Pushing docker images
+          command: |
+            make push_docker
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - test:
+          context: org-global
+      - deploy:
+          context: org-global
+          requires:
+            - test
