@@ -104,4 +104,3 @@ ENV/
 test.jpg
 custom_setup.md
 .pytest_cache/
-hs/
