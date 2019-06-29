@@ -19,7 +19,7 @@ def cli():
     pass
 
 
-@click.command()
+@click.command("prepare-dataset", short_help="Parse, clean and split dataset")
 @click.option("--path_to_ava_txt", help="origin AVA.txt file", required=True, type=Path)
 @click.option("--path_to_save_csv", help="where save train.csv|val.csv|test.csv", required=True, type=Path)
 @click.option("--path_to_images", help="images directory", required=True, type=Path)
@@ -39,7 +39,7 @@ def prepare_dataset(
     click.echo("Done!")
 
 
-@click.command()
+@click.command("train-model", short_help="Train model")
 @click.option("--path_to_save_csv", help="where save train.csv|val.csv|test.csv", required=True, type=Path)
 @click.option("--path_to_images", help="images directory", required=True, type=Path)
 @click.option("--experiment_dir", help="directory name to save all logs and weight", required=True, type=Path)
@@ -62,7 +62,7 @@ def train_model(
     init_lr: float,
     drop_out: float,
     optimizer_type: str,
-    seed: int
+    seed: int,
 ):
     click.echo("Train and validate model")
     set_up_seed(seed)
@@ -82,7 +82,7 @@ def train_model(
     click.echo("Done!")
 
 
-@click.command()
+@click.command("get-image-score", short_help="Get image scores")
 @click.option("--path_to_model_state", help="path to model weight .pth file", required=True, type=Path)
 @click.option("--path_to_image", help="image ", required=True, type=Path)
 def get_image_score(path_to_model_state, path_to_image):
@@ -91,7 +91,7 @@ def get_image_score(path_to_model_state, path_to_image):
     click.echo(result)
 
 
-@click.command()
+@click.command("validate-model", short_help="Validate model")
 @click.option("--path_to_model_state", help="path to model weight .pth file", required=True, type=Path)
 @click.option("--path_to_save_csv", help="where save train.csv|val.csv|test.csv", required=True, type=Path)
 @click.option("--path_to_images", help="images directory", required=True, type=Path)
@@ -110,7 +110,7 @@ def validate_model(path_to_model_state, path_to_save_csv, path_to_images, batch_
     click.echo("Done!")
 
 
-@click.command()
+@click.command("run-web-api", short_help="Start server for model serving")
 @click.option("--path_to_model_state", help="path to model weight .pth file", required=True, type=Path)
 @click.option("--port", help="port for web app", default=8080, type=int)
 @click.option("--host", help="host for web app", default="0.0.0.0", type=str)

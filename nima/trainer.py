@@ -1,4 +1,5 @@
 import logging
+import time
 from pathlib import Path
 from typing import Tuple
 
@@ -110,8 +111,13 @@ class Trainer:
         self.val_loader = val_loader
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = create_model(model_type, drop_out=drop_out).to(self.device)
-        self.optimizer = get_optimizer(optimizer_type=optimizer_type, model=self.model, init_lr=init_lr)
+
+        model = create_model(model_type, drop_out=drop_out).to(self.device)
+        optimizer = get_optimizer(optimizer_type=optimizer_type, model=model, init_lr=init_lr)
+
+        self.model = model
+        self.optimizer = optimizer
+
         self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=self.optimizer, mode="min", patience=5)
         self.criterion = EDMLoss().to(self.device)
         self.model_type = model_type
@@ -122,6 +128,7 @@ class Trainer:
         self.num_epoch = num_epoch
         self.global_train_step = 0
         self.global_val_step = 0
+        self.print_freq = 100
 
     def train_model(self):
         best_loss = float("inf")
@@ -148,19 +155,31 @@ class Trainer:
     def train(self):
         self.model.train()
         train_losses = AverageMeter()
-        for (x, y) in tqdm(self.train_loader):
+        total_iter = len(self.train_loader.dataset) // self.train_loader.batch_size
+
+        for idx, (x, y) in enumerate(self.train_loader):
+            s = time.monotonic()
+
             x = x.to(self.device)
             y = y.to(self.device)
             y_pred = self.model(x)
             loss = self.criterion(p_target=y, p_estimate=y_pred)
             self.optimizer.zero_grad()
+
             loss.backward()
+
             self.optimizer.step()
             train_losses.update(loss.item(), x.size(0))
 
             self.writer.add_scalar("train/current_loss", train_losses.val, self.global_train_step)
             self.writer.add_scalar("train/avg_loss", train_losses.avg, self.global_train_step)
             self.global_train_step += 1
+
+            e = time.monotonic()
+            if idx % self.print_freq:
+                log_time = self.print_freq * (e - s)
+                eta = ((total_iter - idx) * log_time) / 60.0
+                print(f"iter #[{idx}/{total_iter}] " f"loss = {loss:.3f} " f"time = {log_time:.2f} " f"eta = {eta:.2f}")
 
         return train_losses.avg
 
@@ -169,7 +188,7 @@ class Trainer:
         validate_losses = AverageMeter()
 
         with torch.no_grad():
-            for (x, y) in tqdm(self.val_loader):
+            for idx, (x, y) in enumerate(self.val_loader):
                 x = x.to(self.device)
                 y = y.to(self.device)
                 y_pred = self.model(x)

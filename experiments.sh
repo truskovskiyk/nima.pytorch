@@ -23,3 +23,11 @@ neuro submit --no-wait-start -n nima-train12 -g 1 -c 5 -m 12G --gpu-model nvidia
 
 
 neuro submit -n nima-tf -g 0 -c 2 -m 4G --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw tensorflow/tensorflow:latest "tensorboard --logdir /data/exp/ --port 8080"
+
+
+
+neuro submit --no-wait-start -n nima-train -g 1 -c 5 -m 12G --gpu-model nvidia-tesla-v100 --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw truskovskyi/nima:latest "python nima/cli.py train-model --drop_out 0.75 --init_lr 0.0001 --batch_size 512 --model_type resnet18 --path_to_save_csv /data/ --path_to_images /data/images/ --experiment_dir /data/exp/t1-resnet18-2-v100 --num_epoch 100"
+
+neuro submit --no-wait-start -n nima-train -g 1 -c 5 -m 12G --gpu-model nvidia-tesla-v100 --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw truskovskyi/nima:latest "python nima/cli.py train-model --drop_out 0.75 --init_lr 0.001 --batch_size 512 --model_type resnet18 --path_to_save_csv /data/ --path_to_images /data/images/ --experiment_dir /data/exp/t1-resnet18-v100 --num_epoch 100"
+
+neuro submit --no-wait-start -n nima-ssh -g 1 -c 5 -m 12G --gpu-model nvidia-tesla-v100 --http 8080 --non-preemptible -v storage://truskovskiyk/common/nima-datasets/DATA/:/data:rw truskovskyi/nima:latest "sleep 123123123123123123123"
