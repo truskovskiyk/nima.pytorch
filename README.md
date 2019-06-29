@@ -47,6 +47,7 @@ Here are some examples of images with theire scores
 ## Usage
 ```bash
 nima-cli
+
 Usage: cli.py [OPTIONS] COMMAND [ARGS]...
 
 Options:
@@ -54,7 +55,6 @@ Options:
 
 Commands:
   get_image_score  Get image scores
-  help
   prepare_dataset  Parse, clean and split dataset
   run_web_api      Start server for model serving
   train_model      Train model
@@ -62,7 +62,7 @@ Commands:
 ```
 
 
-## Previous version of this project is steal valid and works
+## Previous version of this project is still valid and works
 [you can find here](https://github.com/truskovskiyk/nima.pytorch/tree/v1)
 
 ## Contributing
