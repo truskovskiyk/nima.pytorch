@@ -1,7 +1,7 @@
 import torch
 from torchvision.datasets.folder import default_loader
 
-from decouple import config
+#from decouple import config
 
 from nima.model import NIMA
 from nima.common import Transform, get_mean_score, get_std_score
@@ -15,7 +15,7 @@ device = torch.device("cuda" if use_cuda else "cpu")
 class InferenceModel:
     @classmethod
     def create_model(cls):
-        path_to_model = download_file(config('MODEL_URL'), config('MODEL_PATH'))
+        path_to_model = download_file('https://s3-us-west-1.amazonaws.com/models-nima/pretrain-model.pth', 'pretrain-model.pth')
         return cls(path_to_model)
 
     def __init__(self, path_to_model):
@@ -38,8 +38,8 @@ class InferenceModel:
         image = self.transform(image)
         image = image.unsqueeze_(0)
         image = image.to(device)
-        image = torch.autograd.Variable(image, volatile=True)
-        prob = self.model(image).data.cpu().numpy()[0]
+        with torch.no_grad():
+            prob = self.model(image).data.cpu().numpy()[0]
 
         mean_score = get_mean_score(prob)
         std_score = get_std_score(prob)
