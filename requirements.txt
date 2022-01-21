@@ -14,4 +14,4 @@ flake8==3.7.7
 pytest==4.6.3
 pytest-cov==2.7.1
 pytest-asyncio==0.10.0
-ipython==7.5.0
+ipython==7.16.3
